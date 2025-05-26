@@ -5,6 +5,7 @@ members = [
     "sv-parser-macros",
     "sv-parser-parser",
     "sv-parser-pp",
+    "sv-parser-rewriter",
     "sv-parser-syntaxtree",
 ]
 

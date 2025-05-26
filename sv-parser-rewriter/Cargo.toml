@@ -1,0 +1,26 @@
+[package]
+name = "sv-parser-rewriter"
+version = "0.1.0"
+authors = ["pointerliu"]
+repository = "https://github.com/pointerliu/sv-parser"
+keywords = ["parser", "verilog", "systemverilog"]
+categories = ["parsing"]
+license = "MIT OR Apache-2.0"
+readme = "../README.md"
+description = "Helper crate of sv-parser"
+edition = "2018"
+
+[lib]
+doctest = false
+
+[package.metadata.release]
+tag = false
+
+[features]
+default = []
+trace   = ["sv-parser-parser/trace"]
+
+[dependencies]
+sv-parser-error      = {version = "^0.13.3", path = "../sv-parser-error"}
+sv-parser-parser     = {version = "^0.13.3", path = "../sv-parser-parser"}
+sv-parser-syntaxtree = {version = "^0.13.3", path = "../sv-parser-syntaxtree"}
