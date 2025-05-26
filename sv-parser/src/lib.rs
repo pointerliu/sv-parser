@@ -39,6 +39,22 @@ impl SyntaxTree {
         }
     }
 
+    pub fn get_modified_str(&self, mut positions: Vec<(Locate, String)>) -> String {
+        positions.sort_by(|a, b| b.0.offset.cmp(&a.0.offset));
+        let mut text = None;
+        for node in self {
+            if let RefNode::SourceText(source_text) = node {
+                let mut ctx = self.get_str(vec![node]).unwrap().to_string();
+                for (loc, code) in positions {
+                    ctx.replace_range(loc.offset..loc.offset + loc.len, code.as_str());
+                }
+                text = Some(ctx);
+                break;
+            }
+        }
+        text.unwrap()
+    }
+
     /// Get `&str` without trailing `WhiteSpace` from the specified node
     pub fn get_str_trim<'a, T: Into<RefNodes<'a>>>(&self, nodes: T) -> Option<&str> {
         let mut beg = None;
@@ -149,10 +165,18 @@ impl fmt::Debug for SyntaxTree {
                 }
                 NodeEvent::Enter(x) => {
                     match x {
-                        RefNode::WhiteSpace(WhiteSpace::Newline(_)) => { ws = WS::Newline; }
-                        RefNode::WhiteSpace(WhiteSpace::Space(_)) => { ws = WS::Space; }
-                        RefNode::WhiteSpace(WhiteSpace::Comment(_)) => { ws = WS::Comment; }
-                        RefNode::WhiteSpace(WhiteSpace::CompilerDirective(_)) => { ws = WS::CompilerDirective; }
+                        RefNode::WhiteSpace(WhiteSpace::Newline(_)) => {
+                            ws = WS::Newline;
+                        }
+                        RefNode::WhiteSpace(WhiteSpace::Space(_)) => {
+                            ws = WS::Space;
+                        }
+                        RefNode::WhiteSpace(WhiteSpace::Comment(_)) => {
+                            ws = WS::Comment;
+                        }
+                        RefNode::WhiteSpace(WhiteSpace::CompilerDirective(_)) => {
+                            ws = WS::CompilerDirective;
+                        }
                         _ => {}
                     }
                     ret.push_str(&format!("{}{}\n", " ".repeat(depth), x));
@@ -161,7 +185,9 @@ impl fmt::Debug for SyntaxTree {
                 NodeEvent::Leave(x) => {
                     match x {
                         RefNode::WhiteSpace(_) => {}
-                        _ => { ws = WS::NotWhitespace; }
+                        _ => {
+                            ws = WS::NotWhitespace;
+                        }
                     }
                     depth -= 1;
                 }
@@ -252,8 +278,8 @@ pub fn parse_sv_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
         include_paths,
         ignore_include,
         false, // strip_comments
-        0, // resolve_depth
-        0, // include_depth
+        0,     // resolve_depth
+        0,     // include_depth
     )?;
     parse_sv_pp(text, defines, allow_incomplete)
 }
@@ -290,8 +316,8 @@ pub fn parse_lib_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
         include_paths,
         ignore_include,
         false, // strip_comments
-        0, // resolve_depth
-        0, // include_depth
+        0,     // resolve_depth
+        0,     // include_depth
     )?;
     parse_lib_pp(text, defines, allow_incomplete)
 }
