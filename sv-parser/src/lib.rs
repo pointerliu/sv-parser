@@ -43,7 +43,7 @@ impl SyntaxTree {
         positions.sort_by(|a, b| b.0.offset.cmp(&a.0.offset));
         let mut text = None;
         for node in self {
-            if let RefNode::SourceText(source_text) = node {
+            if let RefNode::SourceText(_) = node {
                 let mut ctx = self.get_str(vec![node]).unwrap().to_string();
                 for (loc, code) in positions {
                     ctx.replace_range(loc.offset..loc.offset + loc.len, code.as_str());
